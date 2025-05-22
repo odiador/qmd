@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { fetchProductos, fetchOrCreateCarro, agregarProductoAlCarro } from '../services/api';
 
 interface Producto {
   id: string;
@@ -25,8 +26,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:8787/productos')
-      .then(r => r.json())
+    fetchProductos()
       .then(data => {
         console.log('Productos cargados:', data);
         setProductos(Array.isArray(data) ? data : []);
@@ -46,18 +46,13 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
       let carro = carroId;
       if (!carro) {
         // Obtener o crear carro
-        const res = await fetch(`http://localhost:8787/carro/${ciudadanoId}`);
-        const data = await res.json();
+        const data = await fetchOrCreateCarro(ciudadanoId);
         carro = data.id;
         setCarroId(carro);
         setCarroIdLocal(carro);
       }
       
-      await fetch(`http://localhost:8787/carro/${carro}/producto`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productoId, cantidad: 1 }),
-      });
+      await agregarProductoAlCarro(carro, productoId, 1);
       
       // Mostrar notificación de éxito
       const toast = document.createElement('div');

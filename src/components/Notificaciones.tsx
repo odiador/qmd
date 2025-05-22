@@ -20,22 +20,23 @@ const Notificaciones: React.FC<Props> = ({ ciudadanoId }) => {
   useEffect(() => {
     if (!ciudadanoId) return;
     setLoading(true);
-    fetch(`http://localhost:8787/notificaciones/${ciudadanoId}`)
-      .then(r => r.json())
-      .then(data => {
-        // Asignar un tipo aleatorio para demostración si no viene del backend
-        const notificacionesFormateadas = data.notificaciones?.map((n: Notificacion, i: number) => ({
-          ...n,
-          id: n.id || `notif-${i}`,
-          tipo: n.tipo || ['info', 'success', 'warning', 'error'][Math.floor(Math.random() * 4)] as 'info' | 'success' | 'warning' | 'error'
-        })) || [];
-        setNotificaciones(notificacionesFormateadas);
-      })
-      .catch((err) => {
-        console.error('Error al cargar notificaciones', err);
-        setError('Error al cargar notificaciones');
-      })
-      .finally(() => setLoading(false));
+    import('../services/api').then(({ fetchNotificaciones }) => {
+      fetchNotificaciones(ciudadanoId)
+        .then(data => {
+          // Asignar un tipo aleatorio para demostración si no viene del backend
+          const notificacionesFormateadas = data.notificaciones?.map((n: Notificacion, i: number) => ({
+            ...n,
+            id: n.id || `notif-${i}`,
+            tipo: n.tipo || ['info', 'success', 'warning', 'error'][Math.floor(Math.random() * 4)] as 'info' | 'success' | 'warning' | 'error'
+          })) || [];
+          setNotificaciones(notificacionesFormateadas);
+        })
+        .catch((err) => {
+          console.error('Error al cargar notificaciones', err);
+          setError('Error al cargar notificaciones');
+        })
+        .finally(() => setLoading(false));
+    });
   }, [ciudadanoId]);
 
   const marcarComoLeida = (id: string) => {
