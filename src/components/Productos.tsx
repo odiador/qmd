@@ -25,7 +25,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:8787/api/productos')
+    fetch('http://localhost:8787/productos')
       .then(r => r.json())
       .then(data => {
         console.log('Productos cargados:', data);
@@ -46,14 +46,14 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
       let carro = carroId;
       if (!carro) {
         // Obtener o crear carro
-        const res = await fetch(`http://localhost:8787/api/carro/${ciudadanoId}`);
+        const res = await fetch(`http://localhost:8787/carro/${ciudadanoId}`);
         const data = await res.json();
         carro = data.id;
         setCarroId(carro);
         setCarroIdLocal(carro);
       }
       
-      await fetch(`http://localhost:8787/api/carro/${carro}/producto`, {
+      await fetch(`http://localhost:8787/carro/${carro}/producto`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productoId, cantidad: 1 }),

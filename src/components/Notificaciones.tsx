@@ -20,7 +20,7 @@ const Notificaciones: React.FC<Props> = ({ ciudadanoId }) => {
   useEffect(() => {
     if (!ciudadanoId) return;
     setLoading(true);
-    fetch(`http://localhost:8787/api/notificaciones/${ciudadanoId}`)
+    fetch(`http://localhost:8787/notificaciones/${ciudadanoId}`)
       .then(r => r.json())
       .then(data => {
         // Asignar un tipo aleatorio para demostración si no viene del backend

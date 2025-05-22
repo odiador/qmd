@@ -28,13 +28,13 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
 
   useEffect(() => {
     if (!carroId && ciudadanoId) {
-      fetch(`http://localhost:8787/api/carro/${ciudadanoId}`)
+      fetch(`http://localhost:8787/carro/${ciudadanoId}`)
         .then(r => r.json())
         .then(data => setCarroId(data.id));
     }
     if (carroId) {
       setLoading(true);
-      fetch(`http://localhost:8787/api/carro/${carroId}`)
+      fetch(`http://localhost:8787/carro/${carroId}`)
         .then(r => r.json())
         .then(data => {
           const items = data.detalles || [];
@@ -63,7 +63,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
     setCantidades({...cantidades, [detalleId]: nuevaCantidad});
     
     try {
-      await fetch(`http://localhost:8787/api/carro/${carroId}/detalle/${detalleId}`, {
+      await fetch(`http://localhost:8787/carro/${carroId}/detalle/${detalleId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cantidad: nuevaCantidad }),
@@ -95,7 +95,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
 
   const eliminarDetalle = async (detalleId: string) => {
     try {
-      await fetch(`http://localhost:8787/api/carro/${carroId}/detalle/${detalleId}`, { 
+      await fetch(`http://localhost:8787/carro/${carroId}/detalle/${detalleId}`, { 
         method: 'DELETE' 
       });
       
@@ -127,7 +127,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
     setProcesando(true);
     
     try {
-      await fetch(`http://localhost:8787/api/carro/${carroId}/tramitar`, { 
+      await fetch(`http://localhost:8787/carro/${carroId}/tramitar`, { 
         method: 'POST' 
       });
       
@@ -170,7 +170,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
             className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
             onClick={() => {
               // Crear carro vacío
-              fetch(`http://localhost:8787/api/carro/${ciudadanoId}`)
+              fetch(`http://localhost:8787/carro/${ciudadanoId}`)
                 .then(r => r.json())
                 .then(data => setCarroId(data.id));
             }}
