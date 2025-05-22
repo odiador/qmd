@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://api.odiador.dev/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Productos
 export const fetchProductos = async () => {
