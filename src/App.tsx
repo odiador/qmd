@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Carro from './components/Carro';
+import CiudadanoInfo from './components/CiudadanoInfo';
 import Navigation from './components/Navigation';
 import Productos from './components/Productos';
 import SelectorCiudadano from './components/SelectorCiudadano';
@@ -47,20 +48,7 @@ function MainApp() {
         <main className="flex-grow container mx-auto p-6 max-w-4xl">
           {ciudadanoId && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="w-full md:w-1/2">
-                  <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
-                </div>
-                <div className="w-full md:w-1/2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ID del Carro (opcional)</label>
-                  <input
-                    className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    placeholder="ID del carro (se genera automáticamente)"
-                    value={carroId}
-                    onChange={e => setCarroId(e.target.value)}
-                  />
-                </div>
-              </div>
+              <CiudadanoInfo ciudadanoId={ciudadanoId} />
             </div>
           )}
           <Routes>

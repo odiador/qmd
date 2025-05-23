@@ -63,6 +63,12 @@ export const fetchCiudadanos = async () => {
   return response.json();
 };
 
+export const fetchCiudadano = async (id: string) => {
+  const response = await fetch(`${API_BASE_URL}/ciudadanos/${id}`);
+  if (!response.ok) throw new Error('Error al cargar ciudadano');
+  return response.json();
+};
+
 // Notificaciones
 export const fetchNotificaciones = async (ciudadanoId: string) => {
   const response = await fetch(`${API_BASE_URL}/notificaciones/${ciudadanoId}`);
