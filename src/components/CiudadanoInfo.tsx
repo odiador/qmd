@@ -40,7 +40,6 @@ const CiudadanoInfo: React.FC<Props> = ({ ciudadanoId }) => {
     <div className="flex flex-col gap-2">
       <div className="text-lg font-bold text-blue-700">{ciudadano.nombre} {ciudadano.apellido}</div>
       <div className="text-gray-700">Cédula: <span className="font-mono">{ciudadano.cedula}</span></div>
-      <div className="text-gray-700">ID: <span className="font-mono">{ciudadano.id}</span></div>
       {ciudadano.direccion && (
         <div className="text-gray-700">Dirección: <span className="font-mono">{ciudadano.direccion}</span></div>
       )}
