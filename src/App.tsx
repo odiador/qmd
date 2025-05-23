@@ -1,75 +1,91 @@
 import { useState } from 'react';
-import Productos from './components/Productos';
+import { Navigate, Route, BrowserRouter as Router, Routes, useNavigate } from 'react-router-dom';
 import Carro from './components/Carro';
-import Notificaciones from './components/Notificaciones';
+import Navigation from './components/Navigation';
+import Productos from './components/Productos';
+import SelectorCiudadano from './components/SelectorCiudadano';
 
-function App() {
-  const [view, setView] = useState<'productos' | 'carro' | 'notificaciones'>('productos');
-  const [ciudadanoId, setCiudadanoId] = useState('');
+function setCookie(name: string, value: string, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+}
+function getCookie(name: string) {
+  return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1] || '';
+}
+function deleteCookie(name: string) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
+
+function MainApp() {
+  const [ciudadanoId, setCiudadanoIdState] = useState(() => getCookie('ciudadanoId') || '');
   const [carroId, setCarroId] = useState('');
+  const navigate = useNavigate();
+
+  const setCiudadanoId = (id: string) => {
+    setCiudadanoIdState(id);
+    if (id) {
+      setCookie('ciudadanoId', id);
+      navigate('/productos');
+    } else {
+      deleteCookie('ciudadanoId');
+      navigate('/login');
+    }
+    setCarroId('');
+  };
+
+  const cerrarSesion = () => {
+    setCiudadanoId('');
+    setCarroId('');
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen w-screen bg-gray bg-white text-gray-900 flex flex-col">
-      <header className="bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-md">
-        <div className="container mx-auto py-4 px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <h1 className="text-3xl font-bold">
-              <span className="text-yellow-300">QMD</span> - Carro de Productos
-            </h1>
-            <nav className="flex mt-4 md:mt-0">
-              {['productos', 'carro', 'notificaciones'].map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-4 py-2 mx-1 rounded-t-lg transition-colors ${
-                    view === tab 
-                      ? 'bg-white text-blue-700 font-semibold shadow-inner' 
-                      : 'hover:bg-blue-600 text-white'
-                  }`}
-                  onClick={() => setView(tab as any)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </header>
-      
-      <main className="flex-grow container mx-auto p-6 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID del Ciudadano</label>
-              <input
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder="Ingrese ID del ciudadano"
-                value={ciudadanoId}
-                onChange={e => setCiudadanoId(e.target.value)}
-              />
+      <Navigation ciudadanoId={ciudadanoId} cerrarSesion={cerrarSesion} />
+      <div className="pt-24"> {/* Padding para que el contenido no quede debajo del nav fijo */}
+
+        <main className="flex-grow container mx-auto p-6 max-w-4xl">
+          {ciudadanoId && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="w-full md:w-1/2">
+                  <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
+                </div>
+                <div className="w-full md:w-1/2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ID del Carro (opcional)</label>
+                  <input
+                    className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    placeholder="ID del carro (se genera automáticamente)"
+                    value={carroId}
+                    onChange={e => setCarroId(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID del Carro (opcional)</label>
-              <input
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder="ID del carro (se genera automáticamente)"
-                value={carroId}
-                onChange={e => setCarroId(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {view === 'productos' && <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} />}
-          {view === 'carro' && <Carro ciudadanoId={ciudadanoId} carroId={carroId} setCarroId={setCarroId} />}
-          {view === 'notificaciones' && <Notificaciones ciudadanoId={ciudadanoId} />}
-        </div>
-      </main>
-      
-      <footer className="bg-gray-800 text-gray-300 py-4 text-center text-sm">
-        <p>© {new Date().getFullYear()} QMD Sistema de Carros de Productos</p>
-      </footer>
+          )}
+          <Routes>
+            <Route path="/login" element={
+              <div className='flex flex-col gap-1 items-center justify-center h-full'>
+                {ciudadanoId && (<Navigate to={'/productos'} />)}
+                <h1 className="text-2xl font-bold mb-6 text-center">Selecciona tu usuario</h1>
+                <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
+              </div>
+            } />
+            <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} /> : <Navigate to="/login" />} />
+            <Route path="/carro" element={ciudadanoId ? <Carro ciudadanoId={ciudadanoId} carroId={carroId} setCarroId={setCarroId} /> : <Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
+          </Routes>
+        </main>
+      </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <MainApp />
+    </Router>
   );
 }
 

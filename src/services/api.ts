@@ -56,6 +56,13 @@ export const tramitarCarro = async (carroId: string) => {
   return response.json();
 };
 
+// Ciudadanos
+export const fetchCiudadanos = async () => {
+  const response = await fetch(`${API_BASE_URL}/ciudadanos`);
+  if (!response.ok) throw new Error('Error al cargar ciudadanos');
+  return response.json();
+};
+
 // Notificaciones
 export const fetchNotificaciones = async (ciudadanoId: string) => {
   const response = await fetch(`${API_BASE_URL}/notificaciones/${ciudadanoId}`);
