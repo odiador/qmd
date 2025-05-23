@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, Route, BrowserRouter as Router, Routes, useNavigate } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Carro from './components/Carro';
 import Navigation from './components/Navigation';
 import Productos from './components/Productos';
@@ -83,9 +83,9 @@ function MainApp() {
 
 function App() {
   return (
-    <Router>
+    <HashRouter>
       <MainApp />
-    </Router>
+    </HashRouter>
   );
 }
 
