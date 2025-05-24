@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import Carro from './components/Carro';
+import CarroDrawer from './components/CarroDrawer';
 import CiudadanoInfo from './components/CiudadanoInfo';
+import Modal from './components/Modal';
 import Navigation from './components/Navigation';
 import Productos from './components/Productos';
 import SelectorCiudadano from './components/SelectorCiudadano';
@@ -19,8 +20,18 @@ function deleteCookie(name: string) {
 
 function MainApp() {
   const [ciudadanoId, setCiudadanoIdState] = useState(() => getCookie('ciudadanoId') || '');
-  const [carroId, setCarroId] = useState('');
+  const [carroId, setCarroId] = useState(() => getCookie('carroId') || '');
+  const [modalCarroOpen, setModalCarroOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Guardar carroId en cookie
+  useEffect(() => {
+    if (carroId) {
+      setCookie('carroId', carroId);
+    } else {
+      deleteCookie('carroId');
+    }
+  }, [carroId]);
 
   const setCiudadanoId = (id: string) => {
     setCiudadanoIdState(id);
@@ -29,9 +40,10 @@ function MainApp() {
       navigate('/productos');
     } else {
       deleteCookie('ciudadanoId');
+      deleteCookie('carroId'); // Limpiar carroId al cerrar sesión
+      setCarroId('');
       navigate('/login');
     }
-    setCarroId('');
   };
 
   const cerrarSesion = () => {
@@ -42,9 +54,8 @@ function MainApp() {
 
   return (
     <div className="min-h-screen w-screen bg-gray bg-white text-gray-900 flex flex-col">
-      <Navigation ciudadanoId={ciudadanoId} cerrarSesion={cerrarSesion} />
+      <Navigation ciudadanoId={ciudadanoId} cerrarSesion={cerrarSesion} abrirCarro={() => setModalCarroOpen(true)} />
       <div className="pt-24"> {/* Padding para que el contenido no quede debajo del nav fijo */}
-
         <main className="flex-grow container mx-auto p-6 max-w-4xl">
           {ciudadanoId && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -59,12 +70,27 @@ function MainApp() {
                 <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
               </div>
             } />
-            <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} /> : <Navigate to="/login" />} />
-            <Route path="/carro" element={ciudadanoId ? <Carro ciudadanoId={ciudadanoId} carroId={carroId} setCarroId={setCarroId} /> : <Navigate to="/login" />} />
+            <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} abrirCarro={() => setModalCarroOpen(true)} /> : <Navigate to="/login" />} />
             <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
           </Routes>
         </main>
       </div>
+      {/* Modal tipo drawer para el carro */}
+      <Modal
+        isOpen={modalCarroOpen}
+        onClose={() => setModalCarroOpen(false)}
+        title="Carrito de compras"
+        side
+        size="xl"
+      >
+        {/* Nuevo: selector de carro y gestión de detalles */}
+        <CarroDrawer
+          ciudadanoId={ciudadanoId}
+          carroId={carroId}
+          setCarroId={setCarroId}
+          closeDrawer={() => setModalCarroOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }

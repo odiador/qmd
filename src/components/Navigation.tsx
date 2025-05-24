@@ -9,9 +9,10 @@ import { useNavigate } from 'react-router-dom';
 interface Props {
     ciudadanoId: string;
     cerrarSesion: () => void;
+    abrirCarro?: () => void; // Nuevo: función para abrir el modal del carro
 }
 
-const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion }) => {
+const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) => {
     const { scrollY } = useScroll();
     const [bgOpacity, setBgOpacity] = useState(0);
     const [calcHeight, setHeight] = useState(0);
@@ -53,7 +54,7 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion }) => {
                                 </button>
                                 <button
                                     className="hover:scale-110 text-3xl transition-all cursor-pointer flex items-center gap-1"
-                                    onClick={() => navigate('/carro')}
+                                    onClick={abrirCarro}
                                 >
                                     <PiShoppingCartFill />
                                     <span className='text-xl'>Carrito</span>

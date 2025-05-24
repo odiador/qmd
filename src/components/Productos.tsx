@@ -14,9 +14,10 @@ interface Producto {
 interface Props {
   ciudadanoId: string;
   setCarroId: (id: string) => void;
+  abrirCarro?: () => void; // Nuevo: función para abrir el modal del carro
 }
 
-const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
+const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -56,10 +57,11 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId }) => {
       
       // Mostrar notificación de éxito
       const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
+      toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
       toast.textContent = 'Producto agregado al carro';
       document.body.appendChild(toast);
-      setTimeout(() => document.body.removeChild(toast), 3000);
+      setTimeout(() => document.body.removeChild(toast), 2000);
+      if (abrirCarro) abrirCarro(); // Abrir modal del carro
     } catch (err) {
       console.error('Error al agregar al carro:', err);
       alert('Error al agregar producto al carro');

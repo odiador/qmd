@@ -6,6 +6,7 @@ import {
   eliminarDetalleDelCarro,
   tramitarCarro as tramitar
 } from '../services/api';
+import { motion } from 'framer-motion';
 
 interface Detalle {
   id: string;
@@ -32,12 +33,14 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
   const [error, setError] = useState('');
   const [procesando, setProcesando] = useState(false);
   const [cantidades, setCantidades] = useState<Record<string, number>>({});
+  const [carroTramitado, setCarroTramitado] = useState(false);
 
   useEffect(() => {
     if (!carroId && ciudadanoId) {
       fetchOrCreateCarro(ciudadanoId)
         .then(data => setCarroId(data.id));
     }
+    
     if (carroId) {
       setLoading(true);
       fetchCarroDetalle(carroId)
@@ -87,10 +90,14 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
       }, 0);
       setTotal(nuevoTotal);
       
+      // Mostrar notificación visual
+      mostrarToast('Cantidad actualizada', 'bg-blue-500');
+      
     } catch (err) {
       console.error('Error al actualizar cantidad', err);
       // Revertir cambio local si hay error
       setCantidades({...cantidades, [detalleId]: detalles.find(d => d.id === detalleId)?.cantidad || 1});
+      mostrarToast('Error al actualizar cantidad', 'bg-red-500');
     }
   };
 
@@ -109,15 +116,11 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
       }
       
       // Mostrar confirmación
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
-      toast.textContent = 'Producto eliminado del carro';
-      document.body.appendChild(toast);
-      setTimeout(() => document.body.removeChild(toast), 3000);
+      mostrarToast('Producto eliminado del carro', 'bg-blue-500');
       
     } catch (err) {
       console.error('Error al eliminar producto', err);
-      alert('Error al eliminar el producto');
+      mostrarToast('Error al eliminar el producto', 'bg-red-500');
     }
   };
   
@@ -132,21 +135,90 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
       setDetalles([]);
       setTotal(0);
       setCarroId('');
+      setCarroTramitado(true);
       
       // Mostrar confirmación
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
-      toast.textContent = 'Carro tramitado exitosamente';
-      document.body.appendChild(toast);
-      setTimeout(() => document.body.removeChild(toast), 3000);
+      mostrarToast('¡Carro tramitado exitosamente!', 'bg-green-500');
       
     } catch (err) {
       console.error('Error al tramitar carro', err);
-      alert('Error al tramitar el carro');
+      mostrarToast('Error al tramitar el carro', 'bg-red-500');
     } finally {
       setProcesando(false);
     }
   };
+  
+  const mostrarToast = (mensaje: string, bgColor: string) => {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-4 right-4 z-[3000] ${bgColor} text-white px-4 py-3 rounded shadow-lg flex items-center justify-between min-w-[250px]`;
+    
+    // Contenido del toast
+    const contenido = document.createElement('span');
+    contenido.textContent = mensaje;
+    toast.appendChild(contenido);
+    
+    // Botón de cerrar
+    const botonCerrar = document.createElement('button');
+    botonCerrar.innerHTML = '&times;';
+    botonCerrar.className = 'ml-4 font-bold text-xl focus:outline-none';
+    botonCerrar.onclick = () => document.body.removeChild(toast);
+    toast.appendChild(botonCerrar);
+    
+    document.body.appendChild(toast);
+    
+    // Animación de entrada
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    toast.style.transition = 'all 0.3s ease';
+    
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // Auto-eliminar después de 3 segundos
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
+  };
+
+  if (carroTramitado) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-8"
+      >
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded shadow-md">
+          <svg className="w-20 h-20 mx-auto text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <h3 className="text-2xl font-bold mb-3">¡Compra realizada con éxito!</h3>
+          <p className="mb-4">Tu compra ha sido tramitada correctamente.</p>
+          <button
+            className="mt-2 bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded transition-colors"
+            onClick={() => {
+              // Crear nuevo carro
+              fetchOrCreateCarro(ciudadanoId)
+                .then(data => {
+                  setCarroId(data.id);
+                  setCarroTramitado(false);
+                });
+            }}
+          >
+            Nueva compra
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (!ciudadanoId) {
     return (
@@ -160,7 +232,11 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
   
   if (!carroId) {
     return (
-      <div className="text-center py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-8"
+      >
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-md">
           <p>Primero debes seleccionar productos para crear un carro de compras.</p>
           <button 
@@ -174,7 +250,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
             Crear carro vacío
           </button>
         </div>
-      </div>
+      </motion.div>
     );
   }
   
@@ -196,9 +272,13 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
   }
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative"
+    >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Carro de Compras</h2>
+        <h2 className="text-2xl font-bold">Detalle del Carro</h2>
         <div className="text-sm text-gray-500">Carro ID: {carroId}</div>
       </div>
       
@@ -214,12 +294,6 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
           <p className="mt-4 text-gray-600">El carro está vacío</p>
-          <button 
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
-            onClick={() => window.location.reload()}
-          >
-            Ir a productos
-          </button>
         </div>
       ) : (
         <>
@@ -246,7 +320,13 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {detalles.map(d => (
-                  <tr key={d.id} className="hover:bg-gray-50">
+                  <motion.tr 
+                    key={d.id}
+                    className="hover:bg-gray-50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{d.producto.nombre}</div>
                       {d.producto.codigo && <div className="text-xs text-gray-500">Código: {d.producto.codigo}</div>}
@@ -294,7 +374,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
                         Eliminar
                       </button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
               <tfoot className="bg-gray-50">
@@ -340,7 +420,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
 
