@@ -50,20 +50,20 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
                                     className="hover:scale-110 text-3xl transition-all cursor-pointer flex items-center gap-1"
                                     onClick={() => navigate('/productos')}
                                 ><AiFillProduct />
-                                <span className='text-xl'>Productos</span>
+                                <span className='hidden md:block text-xl'>Productos</span>
                                 </button>
                                 <button
                                     className="hover:scale-110 text-3xl transition-all cursor-pointer flex items-center gap-1"
                                     onClick={abrirCarro}
                                 >
                                     <PiShoppingCartFill />
-                                    <span className='text-xl'>Carrito</span>
+                                    <span className='hidden md:block text-xl'>Carrito</span>
                                 </button>
                                 <button
                                     className="hover:scale-110 text-3xl transition-all cursor-pointer flex items-center gap-1"
                                     onClick={cerrarSesion}
                                 ><IoLogOut />
-                                <span className='text-xl'>Cerrar Sesión</span>
+                                <span className='hidden md:block text-xl'>Cerrar Sesión</span>
                                 </button>
                             </nav>
                         )}
