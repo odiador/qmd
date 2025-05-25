@@ -52,16 +52,15 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
         setCarroId(carro);
         setCarroIdLocal(carro);
       }
-      
       await agregarProductoAlCarro(carro, productoId, 1);
-      
+      // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
+      if (abrirCarro) abrirCarro();
       // Mostrar notificación de éxito
       const toast = document.createElement('div');
       toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
       toast.textContent = 'Producto agregado al carro';
       document.body.appendChild(toast);
       setTimeout(() => document.body.removeChild(toast), 2000);
-      if (abrirCarro) abrirCarro(); // Abrir modal del carro
     } catch (err) {
       console.error('Error al agregar al carro:', err);
       alert('Error al agregar producto al carro');

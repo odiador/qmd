@@ -41,7 +41,7 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
                 }}
             >
                 <div className="flex justify-between items-center size-full max-w-4xl w-full">
-                    <h1 className="text-3xl font-teko">
+                    <h1 className="text-3xl font-nanum">
                         Quien me debe</h1>
                     <div className="flex gap-2">
                         {ciudadanoId && (

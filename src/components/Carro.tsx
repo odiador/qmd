@@ -297,25 +297,15 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="bg-white rounded-lg shadow overflow-x-auto max-w-full">
+            <table className="min-w-[600px] w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Producto
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Precio
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cantidad
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Subtotal
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider basis-1/3">Producto</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider basis-1/3">Precio</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider basis-1/3">Cantidad</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider basis-1/3">Subtotal</th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -327,14 +317,14 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap basis-1/3">
                       <div className="text-sm font-medium text-gray-900">{d.producto.nombre}</div>
                       {d.producto.codigo && <div className="text-xs text-gray-500">Código: {d.producto.codigo}</div>}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap basis-1/3">
                       <div className="text-sm text-gray-900">${d.producto.precio.toLocaleString('es-CO')}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap basis-1/3">
                       <div className="flex items-center">
                         <button 
                           className="w-8 h-8 rounded-l bg-gray-200 flex items-center justify-center border border-gray-300"
@@ -361,7 +351,7 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
                         </button>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap basis-1/3">
                       <div className="text-sm font-medium text-gray-900">
                         ${((cantidades[d.id] || d.cantidad) * d.producto.precio).toLocaleString('es-CO')}
                       </div>

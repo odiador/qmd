@@ -15,18 +15,21 @@ export const fetchOrCreateCarro = async (ciudadanoId: string) => {
 };
 
 export const fetchCarroDetalle = async (carroId: string) => {
-  const response = await fetch(`${API_BASE_URL}/carro/${carroId}`);
+  const response = await fetch(`${API_BASE_URL}/carro/detalle/${carroId}`);
   if (!response.ok) throw new Error('Error al cargar el carro');
   return response.json();
 };
 
-export const agregarProductoAlCarro = async (carroId: string, productoId: string, cantidad: number) => {
+export const agregarProductoAlCarro = async (carroId: string, productoId: string | number, cantidad: number) => {
   const response = await fetch(`${API_BASE_URL}/carro/${carroId}/producto`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ productoId, cantidad }),
+    body: JSON.stringify({ productoId: Number(productoId), cantidad: Number(cantidad) }),
   });
-  if (!response.ok) throw new Error('Error al agregar producto al carro');
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al agregar producto al carro: ${errorText}`);
+  }
   return response.json();
 };
 

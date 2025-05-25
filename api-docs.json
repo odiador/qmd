@@ -1,0 +1,208 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "QMD API",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {},
+        "parameters": {}
+    },
+    "paths": {
+        "/productos": {
+            "get": {
+                "operationId": "get__productos",
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/ciudadanos": {
+            "get": {
+                "operationId": "get__ciudadanos",
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/ciudadanos/{id}": {
+            "get": {
+                "operationId": "get__ciudadanos_{id}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/carro/{ciudadanoId}": {
+            "get": {
+                "operationId": "get__carro_{ciudadanoId}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "ciudadanoId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/carro/detalle/{carroId}": {
+            "get": {
+                "operationId": "get__carro_detalle_{carroId}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "carroId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/carro/{carroId}/tramitar": {
+            "post": {
+                "operationId": "post__carro_{carroId}_tramitar",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "carroId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/carro/{carroId}/producto": {
+            "post": {
+                "operationId": "post__carro_{carroId}_producto",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "carroId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/carro/{carroId}/detalle/{detalleId}": {
+            "put": {
+                "operationId": "put__carro_{carroId}_detalle_{detalleId}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "carroId",
+                        "in": "path"
+                    },
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "detalleId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "delete__carro_{carroId}_detalle_{detalleId}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "carroId",
+                        "in": "path"
+                    },
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "detalleId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        },
+        "/notificaciones/{ciudadanoId}": {
+            "get": {
+                "operationId": "get__notificaciones_{ciudadanoId}",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "name": "ciudadanoId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response."
+                    }
+                }
+            }
+        }
+    },
+    "webhooks": {}
+}
