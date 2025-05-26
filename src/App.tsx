@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import CarroDrawer from './components/CarroDrawer';
 import CiudadanoInfo from './components/CiudadanoInfo';
 import Modal from './components/Modal';
 import Navigation from './components/Navigation';
 import Productos from './components/Productos';
 import SelectorCiudadano from './components/SelectorCiudadano';
+import DetallesProducto from './components/DetallesProducto';
 
 function setCookie(name: string, value: string, days = 7) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -71,6 +72,7 @@ function MainApp() {
               </div>
             } />
             <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} abrirCarro={() => setModalCarroOpen(true)} /> : <Navigate to="/login" />} />
+            <Route path="/productos/:id" element={<DetallesProductoWrapper />} />
             <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
           </Routes>
         </main>
@@ -93,6 +95,13 @@ function MainApp() {
       </Modal>
     </div>
   );
+}
+
+// Wrapper para extraer el id de la URL y pasar a DetallesProducto
+function DetallesProductoWrapper() {
+  const { id } = useParams();
+  if (!id) return <div className="p-4">ID de producto no especificado</div>;
+  return <DetallesProducto productoId={id} />;
 }
 
 function App() {

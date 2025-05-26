@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchProductos, fetchOrCreateCarro, agregarProductoAlCarro } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 interface Producto {
   id: string;
@@ -24,6 +25,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
   const [carroId, setCarroIdLocal] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -142,7 +144,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
                 </div>
                 {p.codigo && <div className="text-xs text-gray-500 mt-1">Código: {p.codigo}</div>}
               </div>
-              <div className="px-4 pb-4">
+              <div className="px-4 pb-4 flex flex-col gap-2">
                 <button
                   className={`w-full py-2 px-4 rounded ${
                     addingToCart === p.id 
@@ -168,6 +170,16 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
                       Agregar al carro
                     </>
                   )}
+                </button>
+                <button
+                  className="w-full py-2 px-4 rounded border border-blue-600 text-blue-700 font-medium hover:bg-blue-50 transition-colors flex justify-center items-center"
+                  onClick={() => navigate(`/productos/${p.id}`)}
+                  type="button"
+                >
+                  <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Ver detalles
                 </button>
               </div>
             </div>

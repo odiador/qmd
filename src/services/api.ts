@@ -78,3 +78,9 @@ export const fetchNotificaciones = async (ciudadanoId: string) => {
   if (!response.ok) throw new Error('Error al cargar notificaciones');
   return response.json();
 };
+
+export const fetchDetallesPorProducto = async (productoId: string) => {
+  const response = await fetch(`${API_BASE_URL}/carro/producto/${productoId}`);
+  if (!response.ok) throw new Error('Error al obtener detalles del producto');
+  return response.json();
+};
