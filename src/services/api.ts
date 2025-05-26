@@ -91,6 +91,37 @@ export const crearCiudadano = async (data: {
   return response.json();
 };
 
+// Eliminar ADMIN_SESSION_SECRET y usar token seguro
+export const eliminarCiudadano = async (id: number) => {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/ciudadanos/${id}`, {
+    method: 'DELETE',
+    headers: { 'x-admin-token': token || '' }
+  });
+  if (!response.ok) throw new Error('Error al eliminar ciudadano');
+  return response.json();
+};
+
+export const actualizarCiudadano = async (id: number, data: Partial<{ nombre: string; apellido: string; cedula: string; }>) => {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/editciudadano/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token || '' },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error('Error al actualizar ciudadano');
+  return response.json();
+};
+
+export const fetchCarrosByCiudadano = async (ciudadanoId: number) => {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/carro/${ciudadanoId}`, {
+    headers: { 'x-admin-token': token || '' }
+  });
+  if (!response.ok) throw new Error('Error al obtener carros del ciudadano');
+  return response.json();
+};
+
 // Notificaciones
 export const fetchNotificaciones = async (ciudadanoId: string) => {
   const response = await fetch(`${API_BASE_URL}/notificaciones/${ciudadanoId}`);
@@ -115,5 +146,9 @@ export const loginAdmin = async (email: string, password: string) => {
     const data = await response.json();
     throw new Error(data.error || 'Error de autenticación');
   }
-  return response.json();
+  const data = await response.json();
+  if (data.token) {
+    localStorage.setItem('adminToken', data.token);
+  }
+  return data;
 };

@@ -13,12 +13,14 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
     try {
-      await loginAdmin(email, password);
+      const data = await loginAdmin(email, password);
       setLoading(false);
-      // Guardar cookie de sesión admin
-      document.cookie = 'adminSession=1; path=/; max-age=86400';
-      // Redirigir al panel admin si login correcto
-      window.location.replace('#/admin-panel');
+      if (data.token) {
+        localStorage.setItem('adminToken', data.token);
+        window.location.replace('#/admin-panel');
+      } else {
+        setError('No se recibió token de autenticación');
+      }
     } catch (err) {
       setLoading(false);
       if (err instanceof Error) {

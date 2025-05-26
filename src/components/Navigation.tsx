@@ -62,7 +62,7 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
                         {!ciudadanoId && (
                             <div className="relative">
                                 <button
-                                    className="p-2 rounded-full hover:bg-neutral-100 transition-all focus:outline-none"
+                                    className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
                                     onClick={() => setShowMenu((v) => !v)}
                                     aria-label="Más opciones"
                                     type="button"
@@ -78,6 +78,17 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
                                                 navigate('/admin-login');
                                             }}
                                         >Modo administrador</button>
+                                        {/* Botón cerrar sesión admin */}
+                                        {localStorage.getItem('adminToken') && (
+                                          <button
+                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 border-t"
+                                            onClick={() => {
+                                              localStorage.removeItem('adminToken');
+                                              setShowMenu(false);
+                                              navigate('/login');
+                                            }}
+                                          >Cerrar sesión admin</button>
+                                        )}
                                     </div>
                                 )}
                             </div>
