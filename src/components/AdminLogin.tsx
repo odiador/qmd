@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../services/api';
 
 // Nuevo componente para login de administrador
@@ -7,6 +8,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const AdminLogin = () => {
       setLoading(false);
       if (data.token) {
         localStorage.setItem('adminToken', data.token);
-        window.location.replace('#/admin-panel');
+        navigate('/admin-panel');
       } else {
         setError('No se recibió token de autenticación');
       }
