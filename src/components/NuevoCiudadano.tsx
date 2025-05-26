@@ -147,6 +147,7 @@ const NuevoCiudadano = () => {
                             <option value="no especifica">Prefiero no decir</option>
                         </select>
                     </div>
+                    {/*
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                         <select
@@ -159,6 +160,7 @@ const NuevoCiudadano = () => {
                             <option value="suspendido">Suspendido</option>
                         </select>
                     </div>
+                    */}
                 </div>
 
                 <div className="flex justify-end">

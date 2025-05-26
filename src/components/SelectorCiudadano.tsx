@@ -30,8 +30,7 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
     direccion: '',
     telefono: '',
     fechaNacimiento: '',
-    genero: '',
-    estado: '',
+    genero: ''
   });
   const [errorCrear, setErrorCrear] = useState('');
   const [showMenu, setShowMenu] = useState(false);
@@ -65,12 +64,12 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showMenu]);
 
-  const filteredCiudadanos = inputValue 
+  const filteredCiudadanos = inputValue
     ? ciudadanos.filter(c =>
-        c.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
-        c.apellido.toLowerCase().includes(inputValue.toLowerCase()) ||
-        c.cedula.includes(inputValue)
-      )
+      c.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
+      c.apellido.toLowerCase().includes(inputValue.toLowerCase()) ||
+      c.cedula.includes(inputValue)
+    )
     : ciudadanos.slice(0, 5); // Mostrar los primeros 5 ciudadanos si no hay filtro
 
   const handleCitizenSelect = (citizen: Ciudadano) => {
@@ -95,12 +94,12 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
     <div className="mb-6 relative">
       {/* Botón de menú de opciones */}
       {/* Eliminado: menú de opciones, ahora en Navigation */}
-      
+
       <label className="mb-2 text-sm font-medium text-gray-700 flex items-center gap-1">
-        <HiOutlineUserCircle className="text-lg" /> 
+        <HiOutlineUserCircle className="text-lg" />
         ¿Quién eres tú?
       </label>
-      
+
       {/* Input de búsqueda con ícono */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,7 +118,7 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
           autoComplete="off"
         />
         {inputValue && (
-          <button 
+          <button
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
             onClick={() => {
               setInputValue('');
@@ -136,7 +135,7 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
       {/* Estado de carga y error */}
       {loading && <div className="text-gray-500 mt-1 flex items-center gap-1"><div className="animate-spin h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent"></div> Cargando ciudadanos...</div>}
       {error && <div className="text-red-500 mt-1">{error}</div>}
-      
+
       {/* Sugerencias */}
       {!selectedCitizen && !loading && !error && (
         <div className="mt-2 text-sm text-gray-500">
@@ -266,19 +265,10 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
               <option value="no especifica">Prefiero no decir</option>
             </select>
           </label>
-          <label className="text-sm font-medium text-gray-700">Estado
-            <input
-              className="border p-2 rounded mb-1 w-full"
-              placeholder="Estado"
-              value={form.estado}
-              onChange={e => setForm(f => ({ ...f, estado: e.target.value }))}
-              required
-            />
-          </label>
           {errorCrear && <div className="text-red-500 text-sm">{errorCrear}</div>}
           <button
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-2 disabled:opacity-50"
-            disabled={creando || !form.nombre || !form.apellido || !form.cedula || !form.email || !form.direccion || !form.telefono || !form.fechaNacimiento || !form.genero || !form.estado}
+            disabled={creando || !form.nombre || !form.apellido || !form.cedula || !form.email || !form.direccion || !form.telefono || !form.fechaNacimiento || !form.genero}
             onClick={async () => {
               setCreando(true);
               setErrorCrear('');
@@ -288,7 +278,7 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
                 setSelectedCitizen(nuevo);
                 setInputValue(`${nuevo.nombre} ${nuevo.apellido}`);
                 setShowDropdown(false);
-                setForm({ nombre: '', apellido: '', cedula: '', email: '', direccion: '', telefono: '', fechaNacimiento: '', genero: '', estado: '' });
+                setForm({ nombre: '', apellido: '', cedula: '', email: '', direccion: '', telefono: '', fechaNacimiento: '', genero: '' });
               } catch (e: unknown) {
                 let msg = 'Error al crear ciudadano';
                 if (e instanceof Error) msg = e.message;
@@ -311,7 +301,7 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
             <div className="font-medium text-blue-800">{selectedCitizen.nombre} {selectedCitizen.apellido}</div>
             <div className="text-sm text-blue-600">Cédula: {selectedCitizen.cedula}</div>
           </div>
-          <button 
+          <button
             className="ml-auto bg-white p-2 rounded-full hover:bg-blue-100 transition-colors"
             onClick={() => setShowDropdown(true)}
           >
