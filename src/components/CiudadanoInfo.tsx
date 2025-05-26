@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchCiudadano } from '../services/api';
 
 interface Ciudadano {
@@ -22,6 +23,7 @@ const CiudadanoInfo: React.FC<Props> = ({ ciudadanoId }) => {
   const [ciudadano, setCiudadano] = useState<Ciudadano | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!ciudadanoId) return;
@@ -37,7 +39,20 @@ const CiudadanoInfo: React.FC<Props> = ({ ciudadanoId }) => {
   if (!ciudadano) return <div className="text-gray-500">No se encontró el ciudadano.</div>;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 relative">
+      {/* Botón de solo ver perfil */}
+      <button
+        title="Ver perfil"
+        className="absolute top-0 right-0 p-2 hover:bg-gray-100 rounded-full"
+        onClick={() => navigate(`/ciudadano/${ciudadanoId}/ver`)}
+        style={{ lineHeight: 0 }}
+      >
+        {/* Ícono de perfil en negro (SVG) */}
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4" fill="#111" />
+          <path d="M4 20c0-3.3137 3.134-6 8-6s8 2.6863 8 6" fill="#111" />
+        </svg>
+      </button>
       <div className="text-lg font-bold text-blue-700">{ciudadano.nombre} {ciudadano.apellido}</div>
       <div className="text-gray-700">Cédula: <span className="font-mono">{ciudadano.cedula}</span></div>
       {ciudadano.direccion && (

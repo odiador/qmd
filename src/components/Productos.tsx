@@ -47,29 +47,46 @@ const Productos: React.FC<Props> = ({ ciudadanoId, carroId, abrirCarro }) => {
     try {
       const carro = carroId;
       if (!carro) {
-
-        // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
         if (abrirCarro) abrirCarro();
-        // Mostrar notificación de éxito
         const toast = document.createElement('div');
         toast.className = 'fixed bottom-4 right-4 z-[3000] bg-red-500 text-white px-4 py-2 rounded shadow-lg';
         toast.textContent = 'No hay carro activo. Por favor, crea uno primero.';
         document.body.appendChild(toast);
         setTimeout(() => document.body.removeChild(toast), 2000);
       } else {
-        await agregarProductoAlCarro(carro, productoId, 1);
-        // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
+        try {
+          const result = await agregarProductoAlCarro(carro, productoId, 1);
+          if (result.actualizado) {
+            // Ya existía, se sumó cantidad
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 z-[3000] bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
+            toast.textContent = 'Cantidad aumentada en el carro';
+            document.body.appendChild(toast);
+            setTimeout(() => document.body.removeChild(toast), 2000);
+          } else {
+            // Se creó nuevo detalle
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
+            toast.textContent = 'Producto agregado al carro';
+            document.body.appendChild(toast);
+            setTimeout(() => document.body.removeChild(toast), 2000);
+          }
+        } catch (err) {
+          // Error estructurado de stock insuficiente
+          if (err && typeof err === 'object' && 'error' in err && (err as { error?: string }).error === 'Stock insuficiente') {
+            const stockErr = err as import('../services/api').StockError;
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 z-[3000] bg-yellow-500 text-white px-4 py-2 rounded shadow-lg';
+            toast.textContent = `Stock insuficiente para "${stockErr.producto}". Máximo disponible: ${stockErr.stockDisponible}`;
+            document.body.appendChild(toast);
+            setTimeout(() => document.body.removeChild(toast), 3000);
+          } else {
+            console.error('Error al agregar al carro:', err);
+            alert('Error al agregar producto al carro');
+          }
+        }
         if (abrirCarro) abrirCarro();
-        // Mostrar notificación de éxito
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
-        toast.textContent = 'Producto agregado al carro';
-        document.body.appendChild(toast);
-        setTimeout(() => document.body.removeChild(toast), 2000);
       }
-    } catch (err) {
-      console.error('Error al agregar al carro:', err);
-      alert('Error al agregar producto al carro');
     } finally {
       setAddingToCart(null);
     }

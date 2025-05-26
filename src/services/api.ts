@@ -26,21 +26,35 @@ export const agregarProductoAlCarro = async (carroId: string, productoId: string
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ productoId: Number(productoId), cantidad: Number(cantidad) }),
   });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error al agregar producto al carro: ${errorText}`);
-  }
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) throw data;
+  return data;
 };
 
-export const actualizarCantidadDetalle = async (carroId: string, detalleId: string, cantidad: number) => {
+// Definir la interfaz para el error de stock insuficiente
+export interface StockError {
+  ok: false;
+  error: 'Stock insuficiente';
+  producto: string;
+  stockDisponible: number;
+  solicitado: number;
+  detalleId: number;
+  productoId: number;
+}
+
+export const actualizarCantidadDetalle = async (
+  carroId: string,
+  detalleId: string,
+  cantidad: number
+): Promise<StockError> => {
   const response = await fetch(`${API_BASE_URL}/carro/${carroId}/detalle/${detalleId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cantidad }),
   });
-  if (!response.ok) throw new Error('Error al actualizar cantidad');
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) throw data;
+  return data;
 };
 
 export const eliminarDetalleDelCarro = async (carroId: string, detalleId: string) => {
@@ -67,6 +81,16 @@ export const updateCarro = async (carroId: string | number, data: { descripcion?
     body: JSON.stringify(data)
   });
   if (!response.ok) throw new Error('Error al actualizar el carro');
+  return response.json();
+};
+
+export const crearCarro = async (ciudadanoId: string) => {
+  const response = await fetch(`${API_BASE_URL}/carro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ciudadanoId })
+  });
+  if (!response.ok) throw new Error('Error al crear el carro');
   return response.json();
 };
 

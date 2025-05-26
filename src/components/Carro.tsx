@@ -4,8 +4,9 @@ import {
   fetchCarroDetalle, 
   actualizarCantidadDetalle, 
   eliminarDetalleDelCarro,
-  tramitarCarro as tramitar
+  tramitarCarro as tramitar,
 } from '../services/api';
+import type { StockError } from '../services/api';
 import { motion } from 'framer-motion';
 
 interface Detalle {
@@ -66,14 +67,9 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
 
   const handleCantidadChange = async (detalleId: string, nuevaCantidad: number) => {
     if (nuevaCantidad < 1) return;
-    
-    // Actualizar estado local inmediatamente para UI responsiva
-    setCantidades({...cantidades, [detalleId]: nuevaCantidad});
-    
+    setCantidades({ ...cantidades, [detalleId]: nuevaCantidad });
     try {
       await actualizarCantidadDetalle(carroId, detalleId, nuevaCantidad);
-      
-      // Actualizar el detalle y subtotales
       setDetalles(detalles.map(d => {
         if (d.id === detalleId) {
           const nuevoSubtotal = d.producto.precio * nuevaCantidad;
@@ -81,23 +77,44 @@ const Carro: React.FC<Props> = ({ ciudadanoId, carroId, setCarroId }) => {
         }
         return d;
       }));
-      
-      // Recalcular total
       const nuevoTotal = detalles.reduce((sum, d) => {
-        return sum + (d.id === detalleId 
-          ? d.producto.precio * nuevaCantidad 
+        return sum + (d.id === detalleId
+          ? d.producto.precio * nuevaCantidad
           : d.subtotal);
       }, 0);
       setTotal(nuevoTotal);
-      
-      // Mostrar notificación visual
       mostrarToast('Cantidad actualizada', 'bg-blue-500');
-      
     } catch (err) {
-      console.error('Error al actualizar cantidad', err);
-      // Revertir cambio local si hay error
-      setCantidades({...cantidades, [detalleId]: detalles.find(d => d.id === detalleId)?.cantidad || 1});
-      mostrarToast('Error al actualizar cantidad', 'bg-red-500');
+      // Solo manejamos el formato estructurado de error de stock insuficiente
+      const stockErr = err as StockError;
+      if (stockErr && stockErr.error === 'Stock insuficiente' && typeof stockErr.stockDisponible === 'number') {
+        setCantidades({ ...cantidades, [detalleId]: stockErr.stockDisponible });
+        mostrarToast(
+          `Stock insuficiente para "${stockErr.producto}". Se ajustó a ${stockErr.stockDisponible} (solicitado: ${stockErr.solicitado})`,
+          'bg-yellow-500'
+        );
+        try {
+          await actualizarCantidadDetalle(carroId, detalleId, stockErr.stockDisponible);
+          setDetalles(detalles.map(d => {
+            if (d.id === detalleId) {
+              const nuevoSubtotal = d.producto.precio * stockErr.stockDisponible;
+              return { ...d, cantidad: stockErr.stockDisponible, subtotal: nuevoSubtotal };
+            }
+            return d;
+          }));
+          const nuevoTotal = detalles.reduce((sum, d) => {
+            return sum + (d.id === detalleId
+              ? d.producto.precio * stockErr.stockDisponible
+              : d.subtotal);
+          }, 0);
+          setTotal(nuevoTotal);
+        } catch (autoErr) {
+          console.error('Error al ajustar automáticamente la cantidad', autoErr);
+        }
+      } else {
+        setCantidades({ ...cantidades, [detalleId]: detalles.find(d => d.id === detalleId)?.cantidad || 1 });
+        mostrarToast('Error al actualizar cantidad', 'bg-red-500');
+      }
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchOrCreateCarro, fetchCarrosByCiudadano, updateCarro } from '../services/api';
+import { fetchOrCreateCarro, fetchCarrosByCiudadano, updateCarro, crearCarro } from '../services/api';
 import Carro from './Carro';
 import Modal from './Modal';
 
@@ -39,14 +39,21 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
   useEffect(() => {
     if (!ciudadanoId) return;
     setLoading(true);
-    // Usar el nuevo endpoint que trae todos los carros con subtotal
-    fetchCarrosByCiudadano(ciudadanoId)
-      .then(data => {
-        setCarros(Array.isArray(data) ? data : [data]);
-        if (!carroId) setSeleccionando(true);
+    // Siempre crear o traer el carro activo antes de listar
+    fetchOrCreateCarro(ciudadanoId)
+      .then(() => {
+        fetchCarrosByCiudadano(ciudadanoId)
+          .then(data => {
+            setCarros(Array.isArray(data) ? data : [data]);
+            if (!carroId) setSeleccionando(true);
+          })
+          .catch(() => setError('Error al cargar carros'))
+          .finally(() => setLoading(false));
       })
-      .catch(() => setError('Error al cargar carros'))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        setError('Error al crear carro');
+        setLoading(false);
+      });
   }, [ciudadanoId, carroId]);
 
   const handleSeleccionar = (id: string) => {
@@ -57,7 +64,7 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
   const handleCrear = async () => {
     setCreando(true);
     try {
-      const data = await fetchOrCreateCarro(ciudadanoId);
+      const data = await crearCarro(ciudadanoId);
       setCarros([data]);
       setCarroId(data.id);
       setSeleccionando(false);

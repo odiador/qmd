@@ -11,6 +11,7 @@ import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
 import DetalleCiudadano from './components/DetalleCiudadano';
 import NuevoCiudadano from './components/NuevoCiudadano';
+import VerCiudadano from './components/VerCiudadano';
 
 function setCookie(name: string, value: string, days = 7) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -80,6 +81,7 @@ function MainApp() {
             <Route path="/admin-panel" element={<AdminPanel />} />
             <Route path="/admin-panel/ciudadano/nuevo" element={<NuevoCiudadano />} />
             <Route path="/admin-panel/ciudadano/:id" element={<DetalleCiudadanoWrapper />} />
+            <Route path="/ciudadano/:id/ver" element={<VerCiudadanoWrapper />} />
             <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
           </Routes>
         </main>
@@ -116,6 +118,13 @@ function DetalleCiudadanoWrapper() {
   const { id } = useParams();
   if (!id) return <div className="p-4">ID de ciudadano no especificado</div>;
   return <DetalleCiudadano ciudadanoId={id} />;
+}
+
+// Wrapper para extraer el id de la URL y pasar a VerCiudadano
+function VerCiudadanoWrapper() {
+  const { id } = useParams();
+  if (!id) return <div className="p-4">ID de ciudadano no especificado</div>;
+  return <VerCiudadano ciudadanoId={id} />;
 }
 
 function App() {
