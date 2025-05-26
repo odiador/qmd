@@ -280,9 +280,11 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
                 setShowDropdown(false);
                 setForm({ nombre: '', apellido: '', cedula: '', email: '', direccion: '', telefono: '', fechaNacimiento: '', genero: '' });
               } catch (e: unknown) {
-                let msg = 'Error al crear ciudadano';
-                if (e instanceof Error) msg = e.message;
-                setErrorCrear(msg);
+                if (e instanceof Error) {
+                  setErrorCrear(e.message);
+                } else {
+                  window.location.reload();
+                }
               } finally {
                 setCreando(false);
               }
