@@ -122,7 +122,13 @@ export const crearCiudadano = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (!response.ok) throw new Error('Error al crear ciudadano');
+  if (!response.ok) {
+    const data = await response.json();
+    if (data && data.error && String(data.detalle).includes('UNIQUE constraint failed: Ciudadano.cedula')) {
+      throw new Error('Ya existe un ciudadano con esa cédula.');
+    }
+    throw new Error(data?.error || 'Error al crear ciudadano');
+  }
   return response.json();
 };
 
