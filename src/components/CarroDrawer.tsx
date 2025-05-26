@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchOrCreateCarro, fetchCarrosByCiudadano, updateCarro, crearCarro } from '../services/api';
+import { crearCarro, fetchCarrosByCiudadano, fetchOrCreateCarro, updateCarro } from '../services/api';
 import Carro from './Carro';
-import Modal from './Modal';
 
 interface CarroDrawerProps {
   ciudadanoId: string;
@@ -21,7 +20,7 @@ interface Carro {
   concepto?: string;
 }
 
-const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarroId, closeDrawer }) => {
+const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarroId }) => {
   const [carros, setCarros] = useState<Carro[]>([]); // Si hay soporte multi-carro, si no, solo uno
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -133,12 +132,6 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
                   >
                     Seleccionar
                   </button>
-                  <button
-                    className="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 w-full md:w-auto"
-                    onClick={() => handleAbrirEditarCarro(carro)}
-                  >
-                    Editar
-                  </button>
                 </div>
               </div>
             ))}
@@ -171,28 +164,37 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
         <Carro ciudadanoId={ciudadanoId} carroId={carroId} setCarroId={setCarroId} />
       </div>
       <div className="p-2 flex justify-end">
-        <button className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300" onClick={closeDrawer}>Cerrar</button>
+        <button
+          className="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 ml-2"
+          onClick={() => handleAbrirEditarCarro(carros.find(c => c.id === carroId)!)}
+        >
+          Editar
+        </button>
       </div>
-      <Modal isOpen={carroEditModalOpen} onClose={() => setCarroEditModalOpen(false)} title="Editar Carrito">
-        <div className="flex flex-col gap-4">
-          <label className="block">
-            <span className="text-sm font-medium">Descripción</span>
-            <input type="text" className="border p-2 rounded w-full" value={carroEditForm.descripcion} onChange={e => setCarroEditForm(f => ({ ...f, descripcion: e.target.value }))} />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium">Observaciones</span>
-            <input type="text" className="border p-2 rounded w-full" value={carroEditForm.observaciones} onChange={e => setCarroEditForm(f => ({ ...f, observaciones: e.target.value }))} />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium">Concepto</span>
-            <input type="text" className="border p-2 rounded w-full" value={carroEditForm.concepto} onChange={e => setCarroEditForm(f => ({ ...f, concepto: e.target.value }))} />
-          </label>
-          <div className="flex gap-2 justify-end">
-            <button className="bg-gray-200 px-4 py-2 rounded" onClick={() => setCarroEditModalOpen(false)}>Cancelar</button>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleGuardarEdicionCarro} disabled={carroEditSaving}>{carroEditSaving ? 'Guardando...' : 'Guardar'}</button>
+      {carroEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+            <div className="flex flex-col gap-4">
+              <label className="block">
+                <span className="text-sm font-medium">Descripción</span>
+                <input type="text" className="border p-2 rounded w-full" value={carroEditForm.descripcion} onChange={e => setCarroEditForm(f => ({ ...f, descripcion: e.target.value }))} />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium">Observaciones</span>
+                <input type="text" className="border p-2 rounded w-full" value={carroEditForm.observaciones} onChange={e => setCarroEditForm(f => ({ ...f, observaciones: e.target.value }))} />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium">Concepto</span>
+                <input type="text" className="border p-2 rounded w-full" value={carroEditForm.concepto} onChange={e => setCarroEditForm(f => ({ ...f, concepto: e.target.value }))} />
+              </label>
+              <div className="flex gap-2 justify-end">
+                <button className="bg-gray-200 px-4 py-2 rounded" onClick={() => setCarroEditModalOpen(false)}>Cancelar</button>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleGuardarEdicionCarro} disabled={carroEditSaving}>{carroEditSaving ? 'Guardando...' : 'Guardar'}</button>
+              </div>
+            </div>
           </div>
         </div>
-      </Modal>
+      )}
     </div>
   );
 };
