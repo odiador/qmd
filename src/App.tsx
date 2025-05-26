@@ -28,6 +28,7 @@ function MainApp() {
   const [ciudadanoId, setCiudadanoIdState] = useState(() => getCookie('ciudadanoId') || '');
   const [carroId, setCarroId] = useState(() => getCookie('carroId') || '');
   const [modalCarroOpen, setModalCarroOpen] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Guardar carroId en cookie
@@ -101,6 +102,53 @@ function MainApp() {
           setCarroId={setCarroId}
           closeDrawer={() => setModalCarroOpen(false)}
         />
+      </Modal>
+      {/* Footer con copyright y botón de información */}
+      <footer className="w-full flex items-center justify-center gap-2 py-4 border-t bg-gray-50 text-gray-500 text-sm mt-8">
+        <span>&copy; {new Date().getFullYear()} QMD</span>
+        <button
+          className="ml-2 rounded-full bg-gray-200 hover:bg-gray-300 w-6 h-6 flex items-center justify-center text-lg font-bold text-gray-700 focus:outline-none"
+          onClick={() => setInfoModalOpen(true)}
+          title="Información del proyecto"
+        >
+          ?
+        </button>
+      </footer>
+      {/* Modal de información del proyecto */}
+      <Modal isOpen={infoModalOpen} onClose={() => setInfoModalOpen(false)} title="Acerca de QMD">
+        <div className="p-4 text-gray-700 text-base max-w-md">
+          <p><b>QMD - Quién Me Debe</b> es un sistema de gestión de compras y deudores desarrollado para facilitar el control de productos, carros de compra y tramitaciones para ciudadanos y administradores.</p>
+          <ul className="list-disc pl-6 mt-3 text-sm">
+            <li>Permite a los ciudadanos gestionar sus compras y ver el historial de carros tramitados.</li>
+            <li>Incluye panel de administración para gestión de usuarios y productos.</li>
+            <li>Desarrollado con React, TypeScript, Hono y SQLite.</li>
+            <li>Proyecto académico y de demostración, no apto para producción real.</li>
+          </ul>
+          <div className="mt-4 text-xs text-gray-400">
+            <b>Requisitos funcionales de la aplicación QMD:</b>
+            <ol className="list-decimal pl-6 mt-2 text-xs text-gray-500">
+              <li>Los ciudadanos pueden registrarse y gestionar su información personal.</li>
+              <li>Los ciudadanos pueden ver, crear y gestionar carros de compra.</li>
+              <li>Los ciudadanos pueden agregar productos a su carro, incrementando cantidad si ya existe el producto.</li>
+              <li>El sistema valida el stock al agregar o actualizar productos en el carro, mostrando mensajes claros si no hay suficiente stock.</li>
+              <li>Los ciudadanos pueden tramitar su carro, lo que descuenta stock y registra la fecha/hora de tramitación.</li>
+              <li>Los carros tramitados muestran fecha, hora, cantidad de productos y total, y pueden ser consultados en el historial.</li>
+              <li>Los administradores pueden acceder a un panel para gestionar ciudadanos, productos y carros tramitados.</li>
+              <li>El sistema permite editar atributos de los carros (descripción, observaciones, concepto) desde el frontend y backend.</li>
+              <li>El frontend muestra mensajes claros y modales para errores, confirmaciones y detalles de carros tramitados.</li>
+              <li>El sistema envía notificaciones por correo al tramitar un carro (si está configurado).</li>
+              <li>El sistema cuenta con autenticación de administrador mediante login y token seguro.</li>
+            </ol>
+            <div className="mt-4">
+              Desarrollado por:
+              <ul className="list-none pl-0">
+                <li>Juan Camilo Albarán</li>
+                <li>Juan Manuel Amador</li>
+                <li>Luis Carlos Calderón Calvo</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </Modal>
     </div>
   );
