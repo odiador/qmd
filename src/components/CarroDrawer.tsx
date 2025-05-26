@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchOrCreateCarro } from '../services/api';
+import { fetchOrCreateCarro, fetchCarrosByCiudadano } from '../services/api';
 import Carro from './Carro';
 
 interface CarroDrawerProps {
@@ -9,8 +9,16 @@ interface CarroDrawerProps {
   closeDrawer: () => void;
 }
 
+interface Carro {
+  id: string;
+  codigo?: string;
+  estado?: string;
+  fecha?: string;
+  subtotal?: number; // Agregado para el subtotal
+}
+
 const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarroId, closeDrawer }) => {
-  const [carros, setCarros] = useState<any[]>([]); // Si hay soporte multi-carro, si no, solo uno
+  const [carros, setCarros] = useState<Carro[]>([]); // Si hay soporte multi-carro, si no, solo uno
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [seleccionando, setSeleccionando] = useState(!carroId);
@@ -19,10 +27,10 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
   useEffect(() => {
     if (!ciudadanoId) return;
     setLoading(true);
-    // Si hay soporte multi-carro, aquí se listan. Si no, solo obtener o crear uno.
-    fetchOrCreateCarro(ciudadanoId)
+    // Usar el nuevo endpoint que trae todos los carros con subtotal
+    fetchCarrosByCiudadano(ciudadanoId)
       .then(data => {
-        setCarros([data]);
+        setCarros(Array.isArray(data) ? data : [data]);
         if (!carroId) setSeleccionando(true);
       })
       .catch(() => setError('Error al cargar carros'))
@@ -62,13 +70,18 @@ const CarroDrawer: React.FC<CarroDrawerProps> = ({ ciudadanoId, carroId, setCarr
     return (
       <div className="p-4 flex flex-col gap-4 items-center">
         <h2 className="text-lg font-bold">Selecciona tu carrito</h2>
-        {carros.length > 0 && carros[0].id ? (
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            onClick={() => handleSeleccionar(carros[0].id)}
-          >
-            Usar carrito existente (ID: {carros[0].id})
-          </button>
+        {carros.length > 0 ? (
+          <div className="flex flex-col gap-2 w-full">
+            {carros.map((carro) => (
+              <button
+                key={carro.id}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+                onClick={() => handleSeleccionar(carro.id)}
+              >
+                Usar carrito (ID: {carro.id}) {carro.estado ? `[${carro.estado}]` : ''} {typeof carro.subtotal === 'number' ? `- Subtotal: $${carro.subtotal.toLocaleString('es-CO')}` : ''}
+              </button>
+            ))}
+          </div>
         ) : null}
         <button
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"

@@ -113,12 +113,9 @@ export const actualizarCiudadano = async (id: number, data: Partial<{ nombre: st
   return response.json();
 };
 
-export const fetchCarrosByCiudadano = async (ciudadanoId: number) => {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/carro/${ciudadanoId}`, {
-    headers: { 'x-admin-token': token || '' }
-  });
-  if (!response.ok) throw new Error('Error al obtener carros del ciudadano');
+export const fetchCarrosByCiudadano = async (ciudadanoId: string) => {
+  const response = await fetch(`${API_BASE_URL}/carro/lista/${ciudadanoId}`);
+  if (!response.ok) throw new Error('Error al cargar los carros');
   return response.json();
 };
 

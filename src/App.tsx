@@ -9,6 +9,8 @@ import SelectorCiudadano from './components/SelectorCiudadano';
 import DetallesProducto from './components/DetallesProducto';
 import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
+import DetalleCiudadano from './components/DetalleCiudadano';
+import NuevoCiudadano from './components/NuevoCiudadano';
 
 function setCookie(name: string, value: string, days = 7) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -72,11 +74,12 @@ function MainApp() {
                 <h1 className="text-2xl font-bold mb-6 text-center">Selecciona tu usuario</h1>
                 <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
               </div>
-            } />
-            <Route path="/admin-login" element={<AdminLogin />} />
+            } />            <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} abrirCarro={() => setModalCarroOpen(true)} /> : <Navigate to="/login" />} />
             <Route path="/productos/:id" element={<DetallesProductoWrapper />} />
             <Route path="/admin-panel" element={<AdminPanel />} />
+            <Route path="/admin-panel/ciudadano/nuevo" element={<NuevoCiudadano />} />
+            <Route path="/admin-panel/ciudadano/:id" element={<DetalleCiudadanoWrapper />} />
             <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
           </Routes>
         </main>
@@ -106,6 +109,13 @@ function DetallesProductoWrapper() {
   const { id } = useParams();
   if (!id) return <div className="p-4">ID de producto no especificado</div>;
   return <DetallesProducto productoId={id} />;
+}
+
+// Wrapper para extraer el id de la URL y pasar a DetalleCiudadano
+function DetalleCiudadanoWrapper() {
+  const { id } = useParams();
+  if (!id) return <div className="p-4">ID de ciudadano no especificado</div>;
+  return <DetalleCiudadano ciudadanoId={id} />;
 }
 
 function App() {
