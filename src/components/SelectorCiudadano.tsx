@@ -281,7 +281,6 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
                 setForm({ nombre: '', apellido: '', cedula: '', email: '', direccion: '', telefono: '', fechaNacimiento: '', genero: '' });
               } catch (e: unknown) {
                 if (e instanceof Error) {
-                  setErrorCrear(e.message);
                   window.location.reload();
                 } else {
                   window.location.reload();
