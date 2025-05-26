@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProductos, fetchOrCreateCarro, agregarProductoAlCarro } from '../services/api';
+import { fetchProductos, agregarProductoAlCarro } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface Producto {
@@ -14,15 +14,14 @@ interface Producto {
 
 interface Props {
   ciudadanoId: string;
-  setCarroId: (id: string) => void;
+  carroId: string;
   abrirCarro?: () => void; // Nuevo: función para abrir el modal del carro
 }
 
-const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => {
+const Productos: React.FC<Props> = ({ ciudadanoId, carroId, abrirCarro }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [carroId, setCarroIdLocal] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -44,25 +43,30 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
   const agregarAlCarro = async (productoId: string) => {
     if (!ciudadanoId) return alert('Ingresa un Ciudadano ID');
     setAddingToCart(productoId);
-    
+
     try {
-      let carro = carroId;
+      const carro = carroId;
       if (!carro) {
-        // Obtener o crear carro
-        const data = await fetchOrCreateCarro(ciudadanoId);
-        carro = data.id;
-        setCarroId(carro);
-        setCarroIdLocal(carro);
+
+        // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
+        if (abrirCarro) abrirCarro();
+        // Mostrar notificación de éxito
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 z-[3000] bg-red-500 text-white px-4 py-2 rounded shadow-lg';
+        toast.textContent = 'No hay carro activo. Por favor, crea uno primero.';
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 2000);
+      } else {
+        await agregarProductoAlCarro(carro, productoId, 1);
+        // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
+        if (abrirCarro) abrirCarro();
+        // Mostrar notificación de éxito
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
+        toast.textContent = 'Producto agregado al carro';
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 2000);
       }
-      await agregarProductoAlCarro(carro, productoId, 1);
-      // Solo abrir el modal del carro, sin forzar fetchCarroDetalle aquí
-      if (abrirCarro) abrirCarro();
-      // Mostrar notificación de éxito
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 right-4 z-[3000] bg-green-500 text-white px-4 py-2 rounded shadow-lg';
-      toast.textContent = 'Producto agregado al carro';
-      document.body.appendChild(toast);
-      setTimeout(() => document.body.removeChild(toast), 2000);
     } catch (err) {
       console.error('Error al agregar al carro:', err);
       alert('Error al agregar producto al carro');
@@ -71,12 +75,12 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
     }
   };
 
-  const filteredProductos = searchTerm 
-    ? productos.filter(p => 
-        p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        p.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.categoriaPrincipal?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  const filteredProductos = searchTerm
+    ? productos.filter(p =>
+      p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.categoriaPrincipal?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : productos;
 
   if (loading) return (
@@ -84,7 +88,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
     </div>
   );
-  
+
   if (error) return (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
       <strong className="font-bold">Error:</strong>
@@ -104,11 +108,11 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-          <svg 
-            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
+          <svg
+            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -146,11 +150,10 @@ const Productos: React.FC<Props> = ({ ciudadanoId, setCarroId, abrirCarro }) => 
               </div>
               <div className="px-4 pb-4 flex flex-col gap-2">
                 <button
-                  className={`w-full py-2 px-4 rounded ${
-                    addingToCart === p.id 
-                      ? 'bg-blue-400 cursor-wait' 
-                      : 'bg-blue-600 hover:bg-blue-700 transition-colors'
-                  } text-white font-medium flex justify-center items-center`}
+                  className={`w-full py-2 px-4 rounded ${addingToCart === p.id
+                    ? 'bg-blue-400 cursor-wait'
+                    : 'bg-blue-600 hover:bg-blue-700 transition-colors'
+                    } text-white font-medium flex justify-center items-center`}
                   onClick={() => agregarAlCarro(p.id)}
                   disabled={addingToCart === p.id}
                 >

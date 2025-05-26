@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchCiudadano, actualizarCiudadano, eliminarCiudadano, fetchCarrosByCiudadano, fetchCarroDetalle } from '../services/api';
+import { fetchCiudadano, actualizarCiudadano, eliminarCiudadano, fetchCarrosByCiudadano, fetchCarroDetalle, fetchCarrosTramitadosByCiudadano } from '../services/api';
 import Modal from './Modal';
 
 interface Ciudadano {
@@ -21,6 +21,7 @@ interface Carro {
     codigo: string;
     estado?: string;
     fecha?: string;
+    subtotal?: number;
 }
 
 interface CarroDetalleProducto {
@@ -59,6 +60,8 @@ const DetalleCiudadano = ({ ciudadanoId }: Props) => {
     const [error, setError] = useState('');
     const [carros, setCarros] = useState<Carro[]>([]);
     const [loadingCarros, setLoadingCarros] = useState(false);
+    const [carrosTramitados, setCarrosTramitados] = useState<Carro[]>([]);
+    const [loadingCarrosTramitados, setLoadingCarrosTramitados] = useState(false);
     const [form, setForm] = useState({
         nombre: '',
         apellido: '',
@@ -100,10 +103,16 @@ const DetalleCiudadano = ({ ciudadanoId }: Props) => {
 
                 // Cargar carros del ciudadano
                 setLoadingCarros(true);
-                fetchCarrosByCiudadano(Number(ciudadanoId))
+                fetchCarrosByCiudadano(String(ciudadanoId))
                     .then(carrosData => setCarros(carrosData))
                     .catch(() => setError('Error al cargar carros del ciudadano'))
                     .finally(() => setLoadingCarros(false));
+                // Cargar carros tramitados (solo admin)
+                setLoadingCarrosTramitados(true);
+                fetchCarrosTramitadosByCiudadano(String(ciudadanoId))
+                    .then(data => setCarrosTramitados(data))
+                    .catch(() => {/* no error visible, es solo admin */})
+                    .finally(() => setLoadingCarrosTramitados(false));
             })
             .catch(() => setError('Error al cargar información del ciudadano'))
             .finally(() => setLoading(false));
@@ -414,6 +423,51 @@ const DetalleCiudadano = ({ ciudadanoId }: Props) => {
                         </div>
                     ) : null}
                 </Modal>
+            </div>
+
+            <hr className="my-8 border-gray-300" />
+
+            <div>
+                <h3 className="text-xl font-semibold mb-4">Carros tramitados</h3>
+                {loadingCarrosTramitados ? (
+                    <div className="text-center py-4">Cargando carros tramitados...</div>
+                ) : carrosTramitados.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full border border-collapse">
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="p-2 border text-left">ID</th>
+                                    <th className="p-2 border text-left">Código</th>
+                                    <th className="p-2 border text-left">Fecha</th>
+                                    <th className="p-2 border text-left">Subtotal</th>
+                                    <th className="p-2 border text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {carrosTramitados.map(carro => (
+                                    <tr key={carro.id} className="hover:bg-gray-50">
+                                        <td className="p-2 border">{carro.id}</td>
+                                        <td className="p-2 border">{carro.codigo}</td>
+                                        <td className="p-2 border">{carro.fecha || 'N/A'}</td>
+                                        <td className="p-2 border">{typeof carro.subtotal === 'number' ? `$${carro.subtotal.toLocaleString('es-CO')}` : 'N/A'}</td>
+                                        <td className="p-2 border text-center">
+                                            <button
+                                                className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
+                                                onClick={() => handleVerDetalleCarro(carro.id)}
+                                            >
+                                                Ver detalle
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="bg-gray-50 text-gray-500 p-4 rounded text-center">
+                        No hay carros tramitados para este ciudadano
+                    </div>
+                )}
             </div>
         </div>
     );

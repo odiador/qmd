@@ -75,7 +75,7 @@ function MainApp() {
                 <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
               </div>
             } />            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} abrirCarro={() => setModalCarroOpen(true)} /> : <Navigate to="/login" />} />
+            <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} abrirCarro={() => setModalCarroOpen(true)} carroId={carroId} /> : <Navigate to="/login" />} />
             <Route path="/productos/:id" element={<DetallesProductoWrapper />} />
             <Route path="/admin-panel" element={<AdminPanel />} />
             <Route path="/admin-panel/ciudadano/nuevo" element={<NuevoCiudadano />} />

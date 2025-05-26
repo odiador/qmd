@@ -59,6 +59,17 @@ export const tramitarCarro = async (carroId: string) => {
   return response.json();
 };
 
+export const updateCarro = async (carroId: string | number, data: { descripcion?: string; observaciones?: string; concepto?: string }) => {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/carro/${carroId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token || '' },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error('Error al actualizar el carro');
+  return response.json();
+};
+
 // Ciudadanos
 export const fetchCiudadanos = async () => {
   const response = await fetch(`${API_BASE_URL}/ciudadanos`);
@@ -116,6 +127,15 @@ export const actualizarCiudadano = async (id: number, data: Partial<{ nombre: st
 export const fetchCarrosByCiudadano = async (ciudadanoId: string) => {
   const response = await fetch(`${API_BASE_URL}/carro/lista/${ciudadanoId}`);
   if (!response.ok) throw new Error('Error al cargar los carros');
+  return response.json();
+};
+
+export const fetchCarrosTramitadosByCiudadano = async (ciudadanoId: string) => {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/carro/tramitados/${ciudadanoId}`, {
+    headers: { 'x-admin-token': token || '' }
+  });
+  if (!response.ok) throw new Error('Error al cargar los carros tramitados');
   return response.json();
 };
 
