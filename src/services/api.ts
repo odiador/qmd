@@ -72,6 +72,25 @@ export const fetchCiudadano = async (id: string) => {
   return response.json();
 };
 
+export const crearCiudadano = async (data: {
+  nombre: string;
+  apellido: string;
+  cedula: string;
+  email?: string;
+  direccion?: string;
+  telefono?: string;
+  fechaNacimiento?: string;
+  genero?: string;
+}) => {
+  const response = await fetch(`${API_BASE_URL}/ciudadanos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error('Error al crear ciudadano');
+  return response.json();
+};
+
 // Notificaciones
 export const fetchNotificaciones = async (ciudadanoId: string) => {
   const response = await fetch(`${API_BASE_URL}/notificaciones/${ciudadanoId}`);
@@ -82,5 +101,19 @@ export const fetchNotificaciones = async (ciudadanoId: string) => {
 export const fetchDetallesPorProducto = async (productoId: string) => {
   const response = await fetch(`${API_BASE_URL}/carro/producto/${productoId}`);
   if (!response.ok) throw new Error('Error al obtener detalles del producto');
+  return response.json();
+};
+
+// Login de administrador
+export const loginAdmin = async (email: string, password: string) => {
+  const response = await fetch(`${API_BASE_URL}/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || 'Error de autenticación');
+  }
   return response.json();
 };

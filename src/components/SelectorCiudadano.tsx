@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { fetchCiudadanos } from '../services/api';
+import React, { useEffect, useState, useRef } from 'react';
+import { fetchCiudadanos, crearCiudadano } from '../services/api';
 import { HiOutlineUserCircle, HiOutlineSearch, HiOutlineIdentification } from 'react-icons/hi';
 
 interface Ciudadano {
@@ -21,6 +21,21 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
   const [inputValue, setInputValue] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedCitizen, setSelectedCitizen] = useState<Ciudadano | null>(null);
+  const [creando, setCreando] = useState(false);
+  const [form, setForm] = useState({
+    nombre: '',
+    apellido: '',
+    cedula: '',
+    email: '',
+    direccion: '',
+    telefono: '',
+    fechaNacimiento: '',
+    genero: '',
+    estado: '',
+  });
+  const [errorCrear, setErrorCrear] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -38,6 +53,17 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
       .catch(() => setError('Error al cargar ciudadanos'))
       .finally(() => setLoading(false));
   }, [ciudadanoId]);
+
+  // Cerrar menú al hacer click fuera
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (showMenu && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showMenu]);
 
   const filteredCiudadanos = inputValue 
     ? ciudadanos.filter(c =>
@@ -66,7 +92,10 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 relative">
+      {/* Botón de menú de opciones */}
+      {/* Eliminado: menú de opciones, ahora en Navigation */}
+      
       <label className="mb-2 text-sm font-medium text-gray-700 flex items-center gap-1">
         <HiOutlineUserCircle className="text-lg" /> 
         ¿Quién eres tú?
@@ -152,6 +181,124 @@ const SelectorCiudadano: React.FC<Props> = ({ ciudadanoId, setCiudadanoId }) => 
             </li>
           )}
         </ul>
+      )}
+
+      {/* Mostrar formulario de creación si no hay resultados y hay input */}
+      {showDropdown && inputValue && filteredCiudadanos.length === 0 && !loading && !error && (
+        <div className="mt-4 p-4 border rounded-lg bg-white shadow flex flex-col gap-2">
+          <div className="font-bold text-blue-700 mb-2">¿No encuentras tu usuario? Regístrate:</div>
+          <label className="text-sm font-medium text-gray-700">Nombre
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Nombre"
+              value={form.nombre}
+              onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Apellido
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Apellido"
+              value={form.apellido}
+              onChange={e => setForm(f => ({ ...f, apellido: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Cédula
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Cédula"
+              value={form.cedula}
+              onChange={e => setForm(f => ({ ...f, cedula: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Email
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Email"
+              value={form.email}
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              required
+              type="email"
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Dirección
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Dirección"
+              value={form.direccion}
+              onChange={e => setForm(f => ({ ...f, direccion: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Teléfono
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Teléfono"
+              value={form.telefono}
+              onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Fecha de nacimiento
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Fecha de nacimiento"
+              value={form.fechaNacimiento}
+              onChange={e => setForm(f => ({ ...f, fechaNacimiento: e.target.value }))}
+              required
+              type="date"
+            />
+          </label>
+          <label className="text-sm font-medium text-gray-700">Género
+            <select
+              className="border p-2 rounded mb-1 w-full"
+              value={form.genero}
+              onChange={e => setForm(f => ({ ...f, genero: e.target.value }))}
+              required
+            >
+              <option value="">Selecciona género</option>
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="otro">Otro</option>
+              <option value="no especifica">Prefiero no decir</option>
+            </select>
+          </label>
+          <label className="text-sm font-medium text-gray-700">Estado
+            <input
+              className="border p-2 rounded mb-1 w-full"
+              placeholder="Estado"
+              value={form.estado}
+              onChange={e => setForm(f => ({ ...f, estado: e.target.value }))}
+              required
+            />
+          </label>
+          {errorCrear && <div className="text-red-500 text-sm">{errorCrear}</div>}
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-2 disabled:opacity-50"
+            disabled={creando || !form.nombre || !form.apellido || !form.cedula || !form.email || !form.direccion || !form.telefono || !form.fechaNacimiento || !form.genero || !form.estado}
+            onClick={async () => {
+              setCreando(true);
+              setErrorCrear('');
+              try {
+                const nuevo = await crearCiudadano(form);
+                setCiudadanoId(nuevo.id);
+                setSelectedCitizen(nuevo);
+                setInputValue(`${nuevo.nombre} ${nuevo.apellido}`);
+                setShowDropdown(false);
+                setForm({ nombre: '', apellido: '', cedula: '', email: '', direccion: '', telefono: '', fechaNacimiento: '', genero: '', estado: '' });
+              } catch (e: unknown) {
+                let msg = 'Error al crear ciudadano';
+                if (e instanceof Error) msg = e.message;
+                setErrorCrear(msg);
+              } finally {
+                setCreando(false);
+              }
+            }}
+          >{creando ? 'Creando...' : 'Crear ciudadano'}</button>
+        </div>
       )}
 
       {/* Resumen del ciudadano seleccionado */}

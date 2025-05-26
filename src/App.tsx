@@ -7,6 +7,8 @@ import Navigation from './components/Navigation';
 import Productos from './components/Productos';
 import SelectorCiudadano from './components/SelectorCiudadano';
 import DetallesProducto from './components/DetallesProducto';
+import AdminLogin from './components/AdminLogin';
+import AdminPanel from './components/AdminPanel';
 
 function setCookie(name: string, value: string, days = 7) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -71,8 +73,10 @@ function MainApp() {
                 <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
               </div>
             } />
+            <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/productos" element={ciudadanoId ? <Productos ciudadanoId={ciudadanoId} setCarroId={setCarroId} abrirCarro={() => setModalCarroOpen(true)} /> : <Navigate to="/login" />} />
             <Route path="/productos/:id" element={<DetallesProductoWrapper />} />
+            <Route path="/admin-panel" element={<AdminPanel />} />
             <Route path="*" element={<Navigate to={ciudadanoId ? '/productos' : '/login'} />} />
           </Routes>
         </main>

@@ -1,9 +1,10 @@
 import { AnimatePresence, motion, useScroll } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AiFillProduct } from 'react-icons/ai';
 import { BiX } from 'react-icons/bi';
 import { IoLogOut } from 'react-icons/io5';
 import { PiShoppingCartFill } from 'react-icons/pi';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
@@ -17,6 +18,8 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
     const [bgOpacity, setBgOpacity] = useState(0);
     const [calcHeight, setHeight] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
 
@@ -27,6 +30,17 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
         });
         return () => unsubscribe();
     }, [scrollY]);
+
+    // Cerrar menú al hacer click fuera
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (showMenu && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setShowMenu(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [showMenu]);
 
     return (
         <>
@@ -41,9 +55,33 @@ const Navigation: React.FC<Props> = ({ ciudadanoId, cerrarSesion, abrirCarro }) 
                 }}
             >
                 <div className="flex justify-between items-center size-full max-w-4xl w-full">
-                    <h1 className="text-3xl font-nanum">
-                        Quien me debe</h1>
-                    <div className="flex gap-2">
+                    <h1 className="text-3xl font-nanum text-center align-middle">
+                        Quien Me Debe</h1>
+                    <div className="flex gap-2 items-center">
+                        {/* Menú de opciones (solo si NO hay sesión) */}
+                        {!ciudadanoId && (
+                            <div className="relative">
+                                <button
+                                    className="p-2 rounded-full hover:bg-neutral-100 transition-all focus:outline-none"
+                                    onClick={() => setShowMenu((v) => !v)}
+                                    aria-label="Más opciones"
+                                    type="button"
+                                >
+                                    <BsThreeDotsVertical className="text-2xl text-black" />
+                                </button>
+                                {showMenu && (
+                                    <div ref={menuRef} className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
+                                        <button
+                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
+                                            onClick={() => {
+                                                setShowMenu(false);
+                                                navigate('/admin-login');
+                                            }}
+                                        >Modo administrador</button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         {ciudadanoId && (
                             <nav className="flex text-black gap-10">
                                 <button
