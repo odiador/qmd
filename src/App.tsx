@@ -73,7 +73,7 @@ function MainApp() {
             <Route path="/login" element={
               <div className='flex flex-col gap-1 items-center justify-center h-full'>
                 {ciudadanoId && (<Navigate to={'/productos'} />)}
-                <h1 className="text-2xl font-bold mb-6 text-center">Selecciona tu usuario</h1>
+                <h1 className="text-2xl font-bold mb-6 text-center">Selecciona tu Ciudadano</h1>
                 <SelectorCiudadano ciudadanoId={ciudadanoId} setCiudadanoId={setCiudadanoId} />
               </div>
             } />            <Route path="/admin-login" element={<AdminLogin />} />

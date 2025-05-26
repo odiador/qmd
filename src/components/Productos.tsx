@@ -116,7 +116,7 @@ const Productos: React.FC<Props> = ({ ciudadanoId, carroId, abrirCarro }) => {
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
-        <h2 className="text-2xl font-bold mb-2 sm:mb-0">Productos Disponibles</h2>
+        <h2 className="text-2xl font-bold mb-2 sm:mb-0">Tu Catálogo de Productos</h2>
         <div className="relative w-full sm:w-64">
           <input
             type="text"
