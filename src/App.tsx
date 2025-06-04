@@ -139,14 +139,6 @@ function MainApp() {
               <li>El sistema envía notificaciones por correo al tramitar un carro (si está configurado).</li>
               <li>El sistema cuenta con autenticación de administrador mediante login y token seguro.</li>
             </ol>
-            <div className="mt-4">
-              Desarrollado por:
-              <ul className="list-none pl-0">
-                <li>Juan Camilo Albarán</li>
-                <li>Juan Manuel Amador</li>
-                <li>Luis Carlos Calderón Calvo</li>
-              </ul>
-            </div>
           </div>
         </div>
       </Modal>
